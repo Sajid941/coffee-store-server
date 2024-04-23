@@ -22,7 +22,7 @@ const client = new MongoClient(uri, {
 async function run() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
-        await client.connect();
+        // await client.connect();
 
         const coffeesCollection = client.db('coffeesDB').collection('coffees')
         const usersCollection = client.db('coffeesDB').collection('users')
@@ -90,6 +90,18 @@ async function run() {
             const result = await usersCollection.insertOne(user)
             res.send(result)
 
+        })
+
+        app.patch('/users', async(req,res)=>{
+            const user = req.body;
+            const filter = {email:user.email}
+            const updatedDoc = {
+                $set:{
+                    lastSignInTime:user.lastSignInTime
+                }
+            }
+            const result =  await usersCollection.updateOne(filter,updatedDoc)
+            res.send(result)
         })
 
         app.delete('/users/:id', async(req,res)=>{
