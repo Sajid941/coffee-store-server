@@ -25,6 +25,7 @@ async function run() {
         await client.connect();
 
         const coffeesCollection = client.db('coffeesDB').collection('coffees')
+        const usersCollection = client.db('coffeesDB').collection('users')
 
         app.get('/coffees', async (req, res) => {
             const cursor = coffeesCollection.find()
@@ -74,6 +75,30 @@ async function run() {
             const result = await coffeesCollection.deleteOne(query)
             res.send(result)
         })
+
+        //coffee store users apis
+
+        app.get('/users', async(req,res)=>{
+            const cursor = usersCollection.find()
+            const result = await cursor.toArray()
+            res.send(result)
+        })
+
+        app.post('/users', async(req,res)=>{
+            const user = req.body;
+            console.log(user)
+            const result = await usersCollection.insertOne(user)
+            res.send(result)
+
+        })
+
+        app.delete('/users/:id', async(req,res)=>{
+            const id = req.params.id;
+            const query = {_id: new ObjectId(id)}
+            const result = await usersCollection.deleteOne(query)
+            res.send(result)
+        })
+
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
